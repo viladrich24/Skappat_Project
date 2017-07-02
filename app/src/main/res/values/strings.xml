@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Final_Project</string>
+    <string name="title_activity_base">BaseActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="snackbar_text">VOLS SABER QUÈ PASSA?</string>
+    <string name="snackbar_action">GO!</string>
+    <string name="text_mofat">Així ho explica el nostre amic iPhone ^.^ </string>
+
+    <string name="action_settings">Settings</string>
+</resources>
