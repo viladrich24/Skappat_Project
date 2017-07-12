@@ -1,10 +1,19 @@
 package viladrich.arnau.final_project.Activities;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,24 +22,31 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import viladrich.arnau.final_project.BaseActivity;
+import viladrich.arnau.final_project.Database.MyDatabaseHelper;
 import viladrich.arnau.final_project.R;
+
+import static utils.Constants.PREFS_NAME;
 
 
 public class Calculadora extends BaseActivity implements View.OnClickListener {
 
-    private static final String TAG = "MainActivity";
     Button b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b_del, b_AC, b_suma, b_resta, b_multi, b_divisio, b_coma, b_equal, b_mofa, b_ans;
     TextView pantalla;
+    TextView navBarMiniText, navBarUser;
+    MyDatabaseHelper myDatabaseHelper;
     int cont, pos_coma, cont_prioritat=0, cont_operadors, i, cont_sumes;
-    Double temp=0.0, resultat;
-    String valor;
+    Double temp = 0.0, resultat, res_doub, res_double_arrodonit;
+    String valor, primeraPos, username;
+    Boolean toastOn = true;
+    SharedPreferences settings;
+    Boolean toastActivat = true;
+    //int iD_item;
     View layout;
 
     public ArrayList<String> operacions = new ArrayList<>();
     public ArrayList<String> tot_unperun = new ArrayList<>();
 
     Boolean coma_pitjada=false, ep_infinit=false, V_Op, already_op=false, no_escrit=true, resultat_actiu=false, anterior_V; //valor true, operacio false
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +55,24 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
         setTitle("Calculadora");
         setItemChecked();
 
-        resultat=0.0;
+        settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        toastActivat = settings.getBoolean("myToast", true);
+        username = settings.getString("myActualUser", "usuari");
+
+        //MenuItem itemToast = (MenuItem) findViewById(R.id.settings_toast);
+        //MenuItem itemNoToast = (MenuItem) findViewById(R.id.settings_estat);
+
+        toastOn = toastActivat;
+
+        //if(toastOn) itemToast.setChecked(true);
+        //else itemNoToast.setChecked(true);
+
+        //iD_item = settings.getInt("myItem", R.id.settings_toast);
+
+        //TODO: posar checked l'item q toca
+        myDatabaseHelper = MyDatabaseHelper.getInstance(this);
+
+        resultat = 0.0;
         layout = findViewById(R.id.layout);
 
         b0 = (Button) findViewById(R.id.num_0);
@@ -86,7 +119,14 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
         b_divisio.setOnClickListener(this);
 
         pantalla.setMovementMethod(new ScrollingMovementMethod());
+
         pulsemAC();
+
+        View navHeaderView = navigationView.getHeaderView(0);
+        navBarMiniText = (TextView) navHeaderView.findViewById(R.id.miniTextNavBar);
+        navBarUser = (TextView) navHeaderView.findViewById(R.id.nomUsuariHeaderBar);
+
+        navBarUser.setText(" > "+username);
 
         b_mofa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +142,6 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
                 Snackbar.make(layout, R.string.snackbar_text, Snackbar.LENGTH_LONG).setAction(R.string.snackbar_action, pulsarMofa).show();
             }
         });
-
     }
 
     @Override
@@ -111,7 +150,6 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
     }
 
     public void escriureValors(){   //VA BÉ
-
 
         V_Op = true;
         resultat_actiu = false;
@@ -141,9 +179,6 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
     }
 
     public void escriureOperands(){   //VA BÉ
-
-
-        Log.v(TAG, Integer.toString(cont));
 
         if(anterior_V || resultat_actiu) {                             //a la primera no et deixarà, guai
 
@@ -247,10 +282,22 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
     public void pulsemAns(){   // VA BÉ
 
         coma_pitjada = true;
-        int numDigitsAns = Double.toString(resultat).length();    //numero digits
-        String resultat_enString = Double.toString(resultat);
 
-        if(!anterior_V && cont!=0) {
+        String res = Double.toString(resultat);
+        int resu_int = (int) Double.parseDouble(res);
+        Double res_d_arr = arrodonir(resultat, 3);
+
+        if((resu_int - res_d_arr) == 0) {
+            primeraPos = Integer.toString(resu_int);
+        }
+        else {
+            primeraPos = Double.toString(res_d_arr);
+        }
+
+        String resultat_enString = primeraPos;
+        int numDigitsAns = resultat_enString.length();
+
+        if(!anterior_V && cont != 0) {
 
             pantalla.append(resultat_enString);
             operacions.add(cont_operadors, resultat_enString);    //ja actualitzat per l'operand
@@ -263,7 +310,7 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
         else {
 
-            cont_operadors=0;
+            cont_operadors = 0;
             operacions.clear();
             operacions.add(cont_operadors,resultat_enString);
             pantalla.setText(resultat_enString);
@@ -276,7 +323,6 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
         V_Op = true;
         anterior_V = true;
     }
-
 
     public void pulsemDel(){   //esborrar tota la cela de l'array o un per un?
 
@@ -336,8 +382,15 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
                     else {    //estem en divisio
 
-                        if (operacions.get(i - 1).equals("0") && operacions.get(i + 1).equals("0")) ep_infinit = true;
-
+                        if (operacions.get(i + 1).equals("0")) {
+                            if (operacions.get(i - 1).equals("0")) ep_infinit = true;
+                            else {
+                                myDatabaseHelper.addNewNoti(username, "x/0");
+                                pantalla.setText("Infinit!!");
+                                if(toastOn) Toast.makeText(getApplicationContext(), "El límit ens donaria infinit!", Toast.LENGTH_LONG).show();
+                                else notificacio3();
+                            }
+                        }
                         else temp = Double.parseDouble(operacions.get(i - 1)) / Double.parseDouble(operacions.get(i + 1));
                     }
 
@@ -384,24 +437,27 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
             }
 
             resultat = Double.parseDouble(operacions.get(0));
-            resultat = arreglarResultat();
+            int res_int = (int) Double.parseDouble(operacions.get(0));
+            res_doub = resultat;
+            res_double_arrodonit = arrodonir(res_doub, 3);
 
-            esborrarAssignar();
+            esborrarAssignar(res_int, res_double_arrodonit);
         }
     }
 
-    public Double arreglarResultat(){
+    public void esborrarAssignar(int res_int, Double res_doub) {
 
         V_Op = true;
-        return resultat;
-    }
 
+        if((res_int - res_doub) == 0) { // tindrem un int
+            primeraPos = Integer.toString(res_int);
+        }
+        else { //tindrem un double
+            primeraPos = Double.toString(res_doub);
+        }
 
-    public void esborrarAssignar() {
-
-        String primeraPos = Double.toString(resultat);
         pulsemAC();
-        cont_operadors=0;
+        cont_operadors = 0;
         resultat_actiu = true;
 
         for (i = 0; i < primeraPos.length(); i++) {
@@ -418,28 +474,116 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
     }
 
-    protected static double arrodonir(Double a){
+    public static double arrodonir(double valorInicial, int num_Decimals){
 
-        double gas = Math.round(a);
+            double partEntera, res;
+            res = valorInicial;
+            partEntera = Math.floor(res);
+            res=(res-partEntera)*Math.pow(10, num_Decimals);
+            res=Math.round(res);
+            res=(res/Math.pow(10, num_Decimals))+partEntera;
+            return res;
 
-        if(Double.toString(gas).length()>9) gas = Math.round(a*100)/100;
-        return gas;
     }
-
 
     public void notificacioInfinit(){
 
-        Log.v(TAG,"not?");
         pantalla.setText("Però què fas boig!?");
-        Toast.makeText(getApplicationContext(), "Potser farà un pet!", Toast.LENGTH_LONG).show();
+        myDatabaseHelper.addNewNoti(username, "0/0");
+        if(toastOn) Toast.makeText(getApplicationContext(), "Què passaria? Pitja el botó per saber-ho!", Toast.LENGTH_LONG).show();
+        else notificacio();
         ep_infinit = false;
-        //caldria fer saltar un fil
-        //posarhi una notificacio
     }
 
-
     public void araNoToca(){
-        Toast.makeText(getApplicationContext(), "Ja saps que ara no toca ;)", Toast.LENGTH_LONG).show();
+        myDatabaseHelper.addNewNoti(username, "+ / * -");
+        if(toastOn) Toast.makeText(getApplicationContext(), "Ja saps que ara no toca ;)", Toast.LENGTH_LONG).show();
+        else notificacio2();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //falten els diferents casos
+
+        Intent i;
+
+        settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+
+        switch (item.getItemId()) {
+            case R.id.telefon:
+                i = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:670583366"));
+                startActivity(i);
+                return true;
+
+            case R.id.navegador:
+                Uri uri = Uri.parse("http://www.google.com");
+                i = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(i);
+                return true;
+
+            case R.id.settings_estat:
+                toastOn = false;
+                editor.putBoolean("myToast", false);
+                //editor.putInt("myItem", R.id.settings_estat);
+                editor.apply();
+                item.setChecked(true);
+                return true;
+
+            case R.id.settings_toast:
+                toastOn = true;
+                editor.putBoolean("myToast", true);
+                //editor.putInt("myItem", R.id.settings_toast);
+                editor.apply();
+                item.setChecked(true);
+                return true;
+
+            default: return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        savedInstanceState.getString("valor");
+        savedInstanceState.getInt("cont");
+        savedInstanceState.getInt("cont_coma");
+        savedInstanceState.getInt("cont_prior");
+        savedInstanceState.getInt("cont_opera");
+        savedInstanceState.getInt("cont_sumes");
+        savedInstanceState.getDouble("temp");
+        savedInstanceState.getDouble("resultat");
+        savedInstanceState.getStringArrayList("operacions");
+        savedInstanceState.getStringArrayList("tot_unperun");
+        pantalla.setText(savedInstanceState.getString("pantalla"));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+        outState.putString("pantalla", pantalla.getText().toString());
+        outState.putString("valor", valor);
+        outState.putInt("cont", cont);
+        outState.putInt("pos_coma", pos_coma);
+        outState.putInt("cont_prior", cont_prioritat);
+        outState.putInt("cont_opera", cont_operadors);
+        outState.putInt("cont_sumes", cont_sumes);
+        outState.putDouble("temp", temp);
+        outState.putDouble("resultat", resultat);
+        outState.putStringArrayList("operacions", operacions);
+        outState.putStringArrayList("tot_unperun", tot_unperun);
+
+
+        // TODO : guardar totes les variables
+
     }
 
     @Override
@@ -475,6 +619,89 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
         }
 
         esValor_esOperacio();
+
+    }
+
+    public void notificacio() {
+
+    int mId = 1;
+
+    NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+    NotificationCompat.Builder mBuilder =
+            new NotificationCompat.Builder(getApplicationContext())
+                    .setSmallIcon(R.drawable.android)
+                    .setContentTitle("0/0 ?? ")
+                    .setContentText("Si vols saber què passa pitja el botó que tens al costat de AC");
+
+
+    Intent resultIntent = new Intent(getApplicationContext(), Calculadora.class);
+
+    TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+
+    stackBuilder.addParentStack(Calculadora.class);
+    stackBuilder.addNextIntent(resultIntent);
+
+    PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+    mBuilder.setContentIntent(resultPendingIntent);
+    mNotificationManager.notify(mId, mBuilder.build());
+
+    }
+
+    public void notificacio2() {
+
+        int mId = 1;
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.android)
+                        .setContentTitle("Error d'escriptura")
+                        .setContentText("No pots escriure 2 signes d'operació junts perquè no tindria sentit. " +
+                                "Si vols fer una multiplicació amb un nombre negatiu, primer escriu aquest nombre " +
+                                "i utilitza l'ANS per multiplicar-lo pel següent.");
+
+
+        Intent resultIntent = new Intent(getApplicationContext(), Calculadora.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+
+        stackBuilder.addParentStack(Calculadora.class);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mBuilder.setContentIntent(resultPendingIntent);
+        mNotificationManager.notify(mId, mBuilder.build());
+
+    }
+
+    public void notificacio3() {
+
+        int mId = 1;
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.android)
+                        .setContentTitle("Divisió entre 0")
+                        .setContentText("Quan dividim entre zero estem fent el numerador infinitament gran, si en fem el límit podem dir que tenideix a infinit..");
+
+
+        Intent resultIntent = new Intent(getApplicationContext(), Calculadora.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+
+        stackBuilder.addParentStack(Calculadora.class);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mBuilder.setContentIntent(resultPendingIntent);
+        mNotificationManager.notify(mId, mBuilder.build());
 
     }
 

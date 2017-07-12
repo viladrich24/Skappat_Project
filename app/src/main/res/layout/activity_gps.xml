@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="viladrich.arnau.final_project.GPS_Files.GPSActivity">
+
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:text="latitude:"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/mostrarCordenades"
+        android:layout_toStartOf="@+id/mostrarCordenades"
+        android:layout_marginRight="23dp"
+        android:layout_marginEnd="23dp" />
+
+    <TextView
+        android:id="@+id/longitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="longitude:"
+        android:layout_marginLeft="13dp"
+        android:layout_marginStart="13dp"
+        android:layout_above="@+id/mostrarCarrer"
+        android:layout_toRightOf="@+id/mostrarCordenades"
+        android:layout_toEndOf="@+id/mostrarCordenades" />
+
+    <Button
+        android:id="@+id/mostrarCordenades"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="show"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="56dp" />
+
+    <TextView
+        android:id="@+id/mostrarCarrer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Carrer_tal"
+        android:layout_below="@+id/latitude"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="140dp" />
+</RelativeLayout>

@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        android:menuCategory="system"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/settings_toast"
+            android:title="Toast"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/settings_estat"
+            android:title="Noti d'estat"
+            app:showAsAction="never" />
+
+    </group>
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/telefon"
+        android:icon="@android:drawable/sym_action_call"
+        app:showAsAction="always"
+        android:title="telefon" />
+
+    <item
+        android:id="@+id/navegador"
+        android:icon="@drawable/chrome"
+        android:title="navegador"
+        app:showAsAction="always" />
+
 </menu>

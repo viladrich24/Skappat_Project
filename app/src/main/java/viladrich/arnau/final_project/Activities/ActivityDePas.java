@@ -6,14 +6,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.MediaController;
-import android.widget.TextView;
 import android.widget.VideoView;
 
 import viladrich.arnau.final_project.R;
 
 public class ActivityDePas extends AppCompatActivity {
 
-    TextView textV;
     VideoView videoV;
     int pos = 0;
 
@@ -23,17 +21,14 @@ public class ActivityDePas extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_de_pas);
 
-        textV = (TextView) findViewById(R.id.text_v);
         videoV = (VideoView) findViewById(R.id.video_v);
-
-        textV.setText(R.string.text_mofat);
-
         setUpVideoView();
 
     }
 
     protected void setUpVideoView() {
-        String uriPath = "android.resoure://" + getPackageName() + "/" + R.raw.video_siri;
+
+        String uriPath = "android.resource://" + getPackageName() + "/raw/video_siri";
         MediaController mediaContr = new MediaController(this);
         Uri uri = Uri.parse(uriPath);
         videoV.setMediaController(mediaContr);

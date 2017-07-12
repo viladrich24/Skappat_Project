@@ -4,12 +4,39 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/calculadora"
-                    android:title="Calculadora"
+                    android:id="@+id/perfil"
+                    android:title="Profile"
+                    android:icon="@drawable/ic_menu_camera"
                     android:checkable="true" />
+
+                <item
+                    android:id="@+id/memory"
+                    android:title="Memory"
+                    android:icon="@drawable/as_picas"
+                    android:checkable="true" />
+
+                <item
+                    android:id="@+id/ranking"
+                    android:title="Ranking"
+                    android:icon="@drawable/rank1"
+                    android:checkable="true" />
+
+                <item
+                    android:id="@+id/calculadora"
+                    android:title="Calculator"
+                    android:icon="@drawable/calculadora"
+                    android:checkable="true" />
+
                 <item
                     android:id="@+id/reproductor_musica"
                     android:title="MusicPlayer"
+                    android:icon="@drawable/music"
+                    android:checkable="true" />
+
+                <item
+                    android:id="@+id/logOut"
+                    android:title="Log Out"
+                    android:icon="@drawable/fletxa"
                     android:checkable="true" />
             </group>
         </menu>
