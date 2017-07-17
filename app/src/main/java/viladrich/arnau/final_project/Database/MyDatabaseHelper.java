@@ -16,7 +16,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     private final String TAG = "MyDataBaseHelper";
 
-    public static final int DATABASE_VERSION = 23;
+    public static final int DATABASE_VERSION = 25;
     public static final String DATABASE_NAME = "MyDataBase.db";
 
 
@@ -29,7 +29,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                     MyDatabaseContract.Table1.COLUMN_MEMORY + " text,"+
                     MyDatabaseContract.Table1.COLUMN_TIME + " text,"+
                     MyDatabaseContract.Table1.COLUMN_NOTI + " text,"+
-                    MyDatabaseContract.Table1.COLUMN_IMAGE_ID + " text)";
+                    MyDatabaseContract.Table1.COLUMN_IMAGE_ID + " text,"+
+                    MyDatabaseContract.Table1.COLUMN_NUMERO + " text)";
 
     private static final String SQL_DELETE_TABLE1 =
             "DROP TABLE IF EXISTS " + MyDatabaseContract.Table1.TABLE_NAME;
@@ -76,10 +77,19 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         valors.put(MyDatabaseContract.Table1.COLUMN_NOTI, "none");
         valors.put(MyDatabaseContract.Table1.COLUMN_IMAGE_ID, Integer.toString(R.drawable.user));
 
-
         long newId = writable.insert(MyDatabaseContract.Table1.TABLE_NAME, null, valors);
 
         return newId;
+    }
+
+    public void addRegistrationNumber(String user, String num){
+
+        ContentValues valors = new ContentValues();
+
+        valors.put(MyDatabaseContract.Table1.COLUMN_NUMERO, num);
+
+        readable.update(MyDatabaseContract.Table1.TABLE_NAME, valors, MyDatabaseContract.Table1.COLUMN_USER +
+                " LIKE ? ", new String[] {user});
     }
 
     public void addNewRanking(String user, String record){ // paso user i record
@@ -407,6 +417,31 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         c.close();
 
         return record;
+    }
+
+    public String queryRegistrationNumber(String user) { //troba si existeix user
+
+        Cursor c;
+
+        c = readable.query(MyDatabaseContract.Table1.TABLE_NAME,
+                new String[] {MyDatabaseContract.Table1.COLUMN_NUMERO},
+                MyDatabaseContract.Table1.COLUMN_USER + " = ? ",
+                new String[] {user}, null, null, null);
+
+        String num = "record";
+
+        if (c.moveToFirst()) {
+
+            do {
+
+                num = c.getString(c.getColumnIndex(MyDatabaseContract.Table1.COLUMN_NUMERO));
+
+            } while (c.moveToNext());
+        }
+
+        c.close();
+
+        return num;
     }
 
     public HashMap <String, String> agafarPhone(){

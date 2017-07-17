@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent i;
 
-        if(loggedIn) i = new Intent(getApplicationContext(), UserProfile.class);  //fes el loggin
+        if(loggedIn) i = new Intent(getApplicationContext(), PagerHolderActivity.class);  //fes el loggin
 
         else i = new Intent(getApplicationContext(), PagerHolderActivity.class); //no cal que el facis
 

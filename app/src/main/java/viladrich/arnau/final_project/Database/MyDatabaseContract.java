@@ -18,6 +18,7 @@ public final class MyDatabaseContract {
         public static final String COLUMN_TIME = "time";
         public static final String COLUMN_NOTI = "noti";
         public static final String COLUMN_IMAGE_ID = "image";
+        public static final String COLUMN_NUMERO = "numero";
     }
 
 }

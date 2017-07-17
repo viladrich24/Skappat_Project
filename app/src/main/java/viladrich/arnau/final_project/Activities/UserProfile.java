@@ -48,7 +48,7 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
     TextView navBarMiniText, navBarUser;
     RoundedBitmapDrawable roundedDrawable;
     Button localitzacio, galleryFoto, takeFoto, editPhone, editMail;
-    TextView tvUser, rankPos, timePos, phoneInfo, mailInfo, lastNoti;
+    TextView tvUser, rankPos, timePos, phoneInfo, mailInfo, lastNoti, infoExtra;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int MY_PERMISSIONS_REQUEST_MANAGE_DOCUMENTS = 2;
@@ -81,6 +81,7 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         timePos = (TextView) findViewById(R.id.pos_time);
         phoneInfo = (TextView) findViewById(R.id.phone_info);
         mailInfo = (TextView) findViewById(R.id.mail_info);
+        infoExtra = (TextView) findViewById(R.id.info_extra_user);
         lastNoti = (TextView) findViewById(R.id.last_notificacio);
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -92,6 +93,8 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         String mailDB = myDatabaseHelper.queryMail(username);
         String notiDB = myDatabaseHelper.queryNoti(username);
         String imageDB = myDatabaseHelper.queryImage(username);
+        String numDB = myDatabaseHelper.queryRegistrationNumber(username);
+
 
         tvUser.setText(username);
         rankPos.setText(Html.fromHtml("<b>Best score: </b>" + record));
@@ -99,6 +102,8 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         phoneInfo.setText(Html.fromHtml("<b>Phone: </b>" + phoneDB));
         mailInfo.setText(Html.fromHtml("<b>E-mail: </b>" + mailDB));
         lastNoti.setText(Html.fromHtml("<b>Last noti: </b>" + notiDB));
+        infoExtra.setText("Active | User number: " + numDB);
+
 
         fotoPerfil = (ImageView) findViewById(R.id.imageView_usuari);
 

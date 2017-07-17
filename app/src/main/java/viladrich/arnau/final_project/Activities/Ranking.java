@@ -63,9 +63,10 @@ public class Ranking extends BaseActivity implements View.OnClickListener {
 
         MyCustomAdapter mtAdapt = new MyCustomAdapter(totsUsuarisRecords, totsUsuarisPhones, totsUsuarisIcons);
 
+        //TODO: ranking
+
         mRecyclerView.setAdapter(mtAdapt);
 
-        //TODO: relacionar el numero amb el valor que ocupa a la posicio
     }
 
     @Override
@@ -95,7 +96,7 @@ public class Ranking extends BaseActivity implements View.OnClickListener {
         switch (v.getId()){
             case R.id.resetRanking:
                 myDatabaseHelper.resetRanking();
-                Intent i = new Intent(getApplicationContext(),Ranking.class);
+                Intent i = new Intent(getApplicationContext(), Ranking.class);
                 startActivity(i);
                 Toast.makeText(getApplicationContext(), "Reset done!", Toast.LENGTH_LONG).show();
                 break;

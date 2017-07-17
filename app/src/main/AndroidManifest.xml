@@ -3,6 +3,8 @@
     package="viladrich.arnau.final_project">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
     <application
         android:allowBackup="true"
@@ -41,7 +43,11 @@
             android:name=".Activities.Ranking"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activities.rankingClasses.DialogNotification" />
-        <activity android:name=".Fragments_Entrada.Expulsat"></activity>
+        <activity android:name=".Fragments_Entrada.Expulsat" />
+        <activity
+            android:name=".Activities.MusicPlayer"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

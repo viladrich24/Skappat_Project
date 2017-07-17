@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -31,22 +30,26 @@ import static utils.Constants.PREFS_NAME;
 public class Calculadora extends BaseActivity implements View.OnClickListener {
 
     Button b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b_del, b_AC, b_suma, b_resta, b_multi, b_divisio, b_coma, b_equal, b_mofa, b_ans;
-    TextView pantalla;
+    Boolean coma_pitjada=false, ep_infinit=false, V_Op=false, already_op=false, no_escrit=true, resultat_actiu=false, anterior_V=false;
     TextView navBarMiniText, navBarUser;
     MyDatabaseHelper myDatabaseHelper;
-    int cont, pos_coma, cont_prioritat=0, cont_operadors, i, cont_sumes;
-    Double temp = 0.0, resultat, res_doub, res_double_arrodonit;
-    String valor, primeraPos, username;
-    Boolean toastOn = true;
     SharedPreferences settings;
+
+    TextView pantalla;
+    int cont, pos_coma, cont_prioritat=0, cont_operadors, i, cont_sumes, resu_int, numDigitsAns;
+    Double temp = 0.0, resultat, res_d_arr;
+
+    String valor, primeraPos, username, primera_dada, conca, trans, conc, res, resultat_enString;
+    Boolean toastOn = true;
+
     Boolean toastActivat = true;
-    //int iD_item;
     View layout;
+
+    int iD_item;
 
     public ArrayList<String> operacions = new ArrayList<>();
     public ArrayList<String> tot_unperun = new ArrayList<>();
 
-    Boolean coma_pitjada=false, ep_infinit=false, V_Op, already_op=false, no_escrit=true, resultat_actiu=false, anterior_V; //valor true, operacio false
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +59,30 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
         setItemChecked();
 
         settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        iD_item = settings.getInt("myItem", R.id.settings_toast);
         toastActivat = settings.getBoolean("myToast", true);
-        username = settings.getString("myActualUser", "usuari");
-
-        //MenuItem itemToast = (MenuItem) findViewById(R.id.settings_toast);
-        //MenuItem itemNoToast = (MenuItem) findViewById(R.id.settings_estat);
-
         toastOn = toastActivat;
 
-        //if(toastOn) itemToast.setChecked(true);
-        //else itemNoToast.setChecked(true);
+        View navHeaderView = navigationView.getHeaderView(0);
+        navBarMiniText = (TextView) navHeaderView.findViewById(R.id.miniTextNavBar);
+        navBarUser = (TextView) navHeaderView.findViewById(R.id.nomUsuariHeaderBar);
 
-        //iD_item = settings.getInt("myItem", R.id.settings_toast);
+        username = settings.getString("myActualUser", "usuari");
+        navBarUser.setText(" > "+username);
+
+
+        /*menu.getItem(R.id.settings_estat).setChecked(true);
+        menu.getItem(R.id.settings_toast).setChecked(false);
+
+        if(toastOn) iNoToast.setChecked(true);
+        else iToast.setChecked(true);*/
+
+        //itemProva = (MenuItem) findViewById(iD_item);
+
+        // peta
+
+        //itemProva.setChecked(true);
+
 
         //TODO: posar checked l'item q toca
         myDatabaseHelper = MyDatabaseHelper.getInstance(this);
@@ -120,13 +135,6 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
         pantalla.setMovementMethod(new ScrollingMovementMethod());
 
-        pulsemAC();
-
-        View navHeaderView = navigationView.getHeaderView(0);
-        navBarMiniText = (TextView) navHeaderView.findViewById(R.id.miniTextNavBar);
-        navBarUser = (TextView) navHeaderView.findViewById(R.id.nomUsuariHeaderBar);
-
-        navBarUser.setText(" > "+username);
 
         b_mofa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,12 +159,9 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
     public void escriureValors(){   //VA BÉ
 
-        V_Op = true;
-        resultat_actiu = false;
-        tot_unperun.add(cont,valor);
+        tot_unperun.add(cont, valor);
 
-
-        if(cont==0) pantalla.setText(valor);
+        if(cont == 0) pantalla.setText(valor);
         else pantalla.append(valor);
 
         if(cont_operadors == -1) cont_operadors = 0;
@@ -168,14 +173,16 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
         else { //l'anterior és varaible, cal concatenar
 
-            String primera_dada = operacions.get(cont_operadors);
-            String conca = primera_dada + valor;
+            primera_dada = operacions.get(cont_operadors);
+            conca = primera_dada + valor;
 
             operacions.add(cont_operadors, conca);
 
         }
 
         cont++;  //cada cop que s'escriu alguna cosa sumes 1
+        V_Op = true;
+        resultat_actiu = false;
     }
 
     public void escriureOperands(){   //VA BÉ
@@ -218,6 +225,7 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
     }
 
     public void pulsemComa(){  //VA BÉ
+
         V_Op = true;
 
         if(!coma_pitjada){
@@ -255,10 +263,10 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
                     pantalla.append(".");
                     tot_unperun.add(cont-1,".");
 
-                    String primera_dada = operacions.get(cont_operadors);
-                    String conca = primera_dada + valor;
+                    trans = operacions.get(cont_operadors);
+                    conc = trans + valor;
 
-                    operacions.add(cont_operadors, conca);
+                    operacions.add(cont_operadors, conc);
 
                 }
             }
@@ -283,9 +291,9 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
         coma_pitjada = true;
 
-        String res = Double.toString(resultat);
-        int resu_int = (int) Double.parseDouble(res);
-        Double res_d_arr = arrodonir(resultat, 3);
+        res = Double.toString(resultat);
+        resu_int = (int) Double.parseDouble(res);
+        res_d_arr = arrodonir(resultat, 3);
 
         if((resu_int - res_d_arr) == 0) {
             primeraPos = Integer.toString(resu_int);
@@ -294,8 +302,8 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
             primeraPos = Double.toString(res_d_arr);
         }
 
-        String resultat_enString = primeraPos;
-        int numDigitsAns = resultat_enString.length();
+        resultat_enString = primeraPos;
+        numDigitsAns = resultat_enString.length();
 
         if(!anterior_V && cont != 0) {
 
@@ -438,8 +446,8 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
             resultat = Double.parseDouble(operacions.get(0));
             int res_int = (int) Double.parseDouble(operacions.get(0));
-            res_doub = resultat;
-            res_double_arrodonit = arrodonir(res_doub, 3);
+            Double res_doub = resultat;
+            Double res_double_arrodonit = arrodonir(res_doub, 3);
 
             esborrarAssignar(res_int, res_double_arrodonit);
         }
@@ -474,15 +482,16 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
     }
 
-    public static double arrodonir(double valorInicial, int num_Decimals){
+    public double arrodonir(double valorInicial, int num_Decimals){
 
-            double partEntera, res;
-            res = valorInicial;
-            partEntera = Math.floor(res);
-            res=(res-partEntera)*Math.pow(10, num_Decimals);
-            res=Math.round(res);
-            res=(res/Math.pow(10, num_Decimals))+partEntera;
-            return res;
+
+            Double res_a, partEntera;
+            res_a = valorInicial;
+            partEntera = Math.floor(res_a);
+            res_a = (res_a-partEntera)*Math.pow(10, num_Decimals);
+            res_a = Double.valueOf(Math.round(res_a));
+            res_a = (res_a/Math.pow(10, num_Decimals))+partEntera;
+            return res_a;
 
     }
 
@@ -503,8 +512,14 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -552,38 +567,100 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        savedInstanceState.getString("valor");
-        savedInstanceState.getInt("cont");
-        savedInstanceState.getInt("cont_coma");
-        savedInstanceState.getInt("cont_prior");
-        savedInstanceState.getInt("cont_opera");
-        savedInstanceState.getInt("cont_sumes");
-        savedInstanceState.getDouble("temp");
-        savedInstanceState.getDouble("resultat");
-        savedInstanceState.getStringArrayList("operacions");
-        savedInstanceState.getStringArrayList("tot_unperun");
-        pantalla.setText(savedInstanceState.getString("pantalla"));
+        valor = savedInstanceState.getString("valor1");
+        cont = savedInstanceState.getInt("conta");
+        pos_coma = savedInstanceState.getInt("pos_coma1");
+        cont_prioritat = savedInstanceState.getInt("cont_prior1");
+        cont_operadors = savedInstanceState.getInt("cont_opera1");
+        cont_sumes = savedInstanceState.getInt("cont_sumes1");
+        temp = savedInstanceState.getDouble("temp1");
+        resultat = savedInstanceState.getDouble("resultat1");
+        operacions = savedInstanceState.getStringArrayList("operacions1");
+        tot_unperun = savedInstanceState.getStringArrayList("tot_unperun1");
+
+        coma_pitjada = savedInstanceState.getBoolean("coma_p");
+        ep_infinit = savedInstanceState.getBoolean("ep_inf");
+        V_Op = savedInstanceState.getBoolean("Vo_p");
+        already_op = savedInstanceState.getBoolean("alt_op");
+        no_escrit = savedInstanceState.getBoolean("no_esc");
+        resultat_actiu = savedInstanceState.getBoolean("res_act");
+        anterior_V = savedInstanceState.getBoolean("ant_V");
+        //res_doub = savedInstanceState.getDouble("res_d");
+        //res_double_arrodonit = savedInstanceState.getDouble("res_d_A");
+        primeraPos = savedInstanceState.getString("1apos");
+        username = savedInstanceState.getString("usern");
+
+        conca = savedInstanceState.getString("conc");
+        primera_dada = savedInstanceState.getString("1ad");
+        conc = savedInstanceState.getString("cc");
+        trans = savedInstanceState.getString("tra");
+
+        res = savedInstanceState.getString("res");
+        resultat_enString = savedInstanceState.getString("res_S");
+        resu_int = savedInstanceState.getInt("res_int");
+        numDigitsAns = savedInstanceState.getInt("nDA");
+        //res_ints = savedInstanceState.getInt("res_in");
+
+        //partEntera = savedInstanceState.getDouble("pE");
+        //res_a = savedInstanceState.getDouble("resa");
+
+        String resaa = savedInstanceState.getString("pantalla1");
+        pantalla.setText(resaa);
+
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        outState.putString("pantalla", pantalla.getText().toString());
-        outState.putString("valor", valor);
-        outState.putInt("cont", cont);
-        outState.putInt("pos_coma", pos_coma);
-        outState.putInt("cont_prior", cont_prioritat);
-        outState.putInt("cont_opera", cont_operadors);
-        outState.putInt("cont_sumes", cont_sumes);
-        outState.putDouble("temp", temp);
-        outState.putDouble("resultat", resultat);
-        outState.putStringArrayList("operacions", operacions);
-        outState.putStringArrayList("tot_unperun", tot_unperun);
+        outState.putString("pantalla1", pantalla.getText().toString());
+        outState.putString("valor1", valor);
+        outState.putInt("conta", cont);
+        outState.putInt("pos_coma1", pos_coma);
+        outState.putInt("cont_prior1", cont_prioritat);
+        outState.putInt("cont_opera1", cont_operadors);
+        outState.putInt("cont_sumes1", cont_sumes);
+        outState.putDouble("temp1", temp);
+        outState.putDouble("resultat1", resultat);
+        outState.putStringArrayList("operacions1", operacions);
+        outState.putStringArrayList("tot_unperun1", tot_unperun);
 
+        outState.putBoolean("coma_p", coma_pitjada);
+        outState.putBoolean("ep_inf", ep_infinit);
+        outState.putBoolean("Vo_p", V_Op);
+        outState.putBoolean("alt_op", already_op);
+        outState.putBoolean("no_esc", no_escrit);
+        outState.putBoolean("res_act", resultat_actiu);
+        outState.putBoolean("ant_V", anterior_V);
+        //outState.putDouble("res_d", res_doub);
+        //outState.putDouble("res_d_A", res_double_arrodonit);
+        outState.putString("1apos", primeraPos);
+        outState.putString("usern", username);
 
-        // TODO : guardar totes les variables
+        outState.putString("conc", conca);
+        outState.putString("1ad", primera_dada);
+        outState.putString("tra", trans);
+        outState.putString("cc", conc);
 
+        outState.putString("res", res);
+        outState.putString("res_S", resultat_enString);
+        outState.putInt("res_int", resu_int);
+        outState.putInt("nDA", numDigitsAns);
+        //outState.putInt("res_in", res_ints);
+
+        //outState.putDouble("resa", res_a);
+        //outState.putDouble("pE", partEntera);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

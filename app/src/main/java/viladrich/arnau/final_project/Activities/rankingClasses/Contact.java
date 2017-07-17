@@ -1,6 +1,7 @@
 package viladrich.arnau.final_project.Activities.rankingClasses;
 
 public class Contact {
+
     private int pos;
     private int icon;
     private String name;
@@ -8,6 +9,7 @@ public class Contact {
     private String record;
 
     Contact(int pos, int icon, String name, String phone, String record){
+
         this.pos = pos;
         this.icon = icon;
         this.name = name;
