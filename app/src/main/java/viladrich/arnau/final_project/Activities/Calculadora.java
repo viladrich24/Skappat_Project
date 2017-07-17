@@ -71,17 +71,19 @@ public class Calculadora extends BaseActivity implements View.OnClickListener {
         navBarUser.setText(" > "+username);
 
 
-        /*menu.getItem(R.id.settings_estat).setChecked(true);
-        menu.getItem(R.id.settings_toast).setChecked(false);
+        //asdajsdaj
 
-        if(toastOn) iNoToast.setChecked(true);
-        else iToast.setChecked(true);*/
+        /*MenuItem itemToast = (MenuItem) findViewById(R.id.settings_toast);
+        MenuItem itemNoToast = (MenuItem) findViewById(R.id.settings_estat);
 
-        //itemProva = (MenuItem) findViewById(iD_item);
-
-        // peta
-
-        //itemProva.setChecked(true);
+        if(toastOn) {
+            itemToast.setChecked(true);
+            itemNoToast.setChecked(false);
+        }
+        else {
+            itemNoToast.setChecked(true);
+            itemToast.setChecked(false);
+        }*/
 
 
         //TODO: posar checked l'item q toca

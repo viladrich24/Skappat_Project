@@ -1,6 +1,9 @@
 package viladrich.arnau.final_project.Activities.rankingClasses;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +50,7 @@ public class MyCustomAdapter extends RecyclerView.Adapter<MyCustomAdapter.Adapte
 
     public ArrayList<Contact> addNewContact(String icon, String user, String phone, String record){
 
-        contactos.add(new Contact(Integer.parseInt(icon), user, phone, record));
+        contactos.add(new Contact(icon, user, phone, record));
         return contactos;
     }
 
@@ -60,15 +63,25 @@ public class MyCustomAdapter extends RecyclerView.Adapter<MyCustomAdapter.Adapte
 
     @Override
     public void onBindViewHolder(MyCustomAdapter.AdapterViewHolder adapterViewholder, int position) {
-        int iconLayout = contactos.get(position).getIcon();
-        switch (iconLayout){
-            default: adapterViewholder.icon.setImageDrawable(adapterViewholder.v.getResources().getDrawable(contactos.get(position).getIcon()));
-        }
 
+        String pistoli = contactos.get(position).getIcon();
+        adapterViewholder.icon.setImageBitmap(StringToBitMap(pistoli));
         adapterViewholder.name.setText(contactos.get(position).getName());
         adapterViewholder.phone.setText(contactos.get(position).getPhone());
         adapterViewholder.record.setText(contactos.get(position).getRecord());
 
+    }
+
+    public Bitmap StringToBitMap(String encodedString) {
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0,
+                    encodeByte.length);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
     }
 
     @Override

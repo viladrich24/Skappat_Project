@@ -9,14 +9,12 @@ import android.util.Log;
 
 import java.util.HashMap;
 
-import viladrich.arnau.final_project.R;
-
 public class MyDatabaseHelper extends SQLiteOpenHelper {
 
 
     private final String TAG = "MyDataBaseHelper";
 
-    public static final int DATABASE_VERSION = 27;
+    public static final int DATABASE_VERSION = 35;
     public static final String DATABASE_NAME = "MyDataBase.db";
 
 
@@ -65,7 +63,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public long createRow(String s1, String s2, String s3, String s4){
+    public long createRow(String s1, String s2, String s3, String s4, String s5){
 
         ContentValues valors = new ContentValues();
         valors.put(MyDatabaseContract.Table1.COLUMN_USER, s1);
@@ -75,7 +73,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         valors.put(MyDatabaseContract.Table1.COLUMN_MEMORY, "99");
         valors.put(MyDatabaseContract.Table1.COLUMN_TIME, "99:99");
         valors.put(MyDatabaseContract.Table1.COLUMN_NOTI, "none");
-        valors.put(MyDatabaseContract.Table1.COLUMN_IMAGE_ID, Integer.toString(R.drawable.user));
+        valors.put(MyDatabaseContract.Table1.COLUMN_IMAGE_ID, s5);
 
         long newId = writable.insert(MyDatabaseContract.Table1.TABLE_NAME, null, valors);
 

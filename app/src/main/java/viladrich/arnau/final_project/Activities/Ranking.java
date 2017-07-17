@@ -63,8 +63,6 @@ public class Ranking extends BaseActivity implements View.OnClickListener {
 
         MyCustomAdapter mtAdapt = new MyCustomAdapter(totsUsuarisRecords, totsUsuarisPhones, totsUsuarisIcons);
 
-        //TODO: ranking
-
         mRecyclerView.setAdapter(mtAdapt);
 
     }

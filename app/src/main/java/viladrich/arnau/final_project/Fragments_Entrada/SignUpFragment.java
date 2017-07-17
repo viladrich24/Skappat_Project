@@ -1,14 +1,19 @@
 package viladrich.arnau.final_project.Fragments_Entrada;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
 
 import viladrich.arnau.final_project.Database.MyDatabaseHelper;
 import viladrich.arnau.final_project.R;
@@ -47,7 +52,11 @@ public class SignUpFragment extends Fragment {
 
                     if (alreadyExisit == -1) {  // si no hi ha cap usuari amb aquest nom, el crees amb totes les dades
 
-                        long x = myDatabaseHelper.createRow(et_user.getText().toString(), et_password.getText().toString(), et_mail.getText().toString(), et_phone.getText().toString());
+
+                        Bitmap icon = BitmapFactory.decodeResource(getActivity().getApplicationContext().getResources(), R.drawable.user);
+                        String aa = BitMapToString(icon);
+
+                        long x = myDatabaseHelper.createRow(et_user.getText().toString(), et_password.getText().toString(), et_mail.getText().toString(), et_phone.getText().toString(), aa);
                         myDatabaseHelper.addRegistrationNumber(et_user.getText().toString(), Long.toString(x));
                         Toast.makeText(getContext(), "Enhorabona, t'has registrat amb èxit! \nUser number: " + x, Toast.LENGTH_LONG).show();
                     } else
@@ -67,5 +76,12 @@ public class SignUpFragment extends Fragment {
         return rootview;
     }
 
+    public String BitMapToString(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String temp = Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
+    }
 
 }

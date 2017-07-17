@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import viladrich.arnau.final_project.Activities.gallery.PermissionUtils;
@@ -53,8 +56,8 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private static final int MY_PERMISSIONS_REQUEST_MANAGE_DOCUMENTS = 2;
     SharedPreferences sp;
-    ImageView image;
-    String username;
+    Bitmap bitMapImage;
+    String username, imagePathLink;
     private boolean canWeRead = false;
     private Activity activity = this;
 
@@ -66,13 +69,8 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         setItemChecked();
 
         sp = getSharedPreferences("galleryexample", Context.MODE_PRIVATE);
-
-        ///image = (ImageView) findViewById(R.id.imageView);
-
-        canWeRead = canWeRead();
-        if (canWeRead) {
-            loadImageFromString(sp.getString("imagePath", null));
-        }
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        username = settings.getString("myActualUser", "usuari");
 
         myDatabaseHelper = MyDatabaseHelper.getInstance(getApplicationContext());
 
@@ -83,9 +81,7 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         mailInfo = (TextView) findViewById(R.id.mail_info);
         infoExtra = (TextView) findViewById(R.id.info_extra_user);
         lastNoti = (TextView) findViewById(R.id.last_notificacio);
-
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        username = settings.getString("myActualUser", "usuari");
+        fotoPerfil = (ImageView) findViewById(R.id.imageView_usuari);
 
         String record = myDatabaseHelper.queryMemory(username);
         String recordTime = myDatabaseHelper.queryTime(username);
@@ -95,6 +91,24 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         String imageDB = myDatabaseHelper.queryImage(username);
         String numDB = myDatabaseHelper.queryRegistrationNumber(username);
 
+
+        if(!imageDB.equals("null")) {
+
+            Bitmap bm = StringToBitMap(imageDB);
+            setImageFromDB(bm);
+
+            //ja està referenciat a fotoPerfil
+        }
+
+        else {
+
+            Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.user);
+            setImageFromDB(icon);
+            String aa = BitMapToString(icon);
+            myDatabaseHelper.addNewPhoto(username, aa);
+        }
+
+
         tvUser.setText(username);
         rankPos.setText(Html.fromHtml("<b>Best score: </b>" + record));
         timePos.setText(Html.fromHtml("<b>Time: </b>" + recordTime));
@@ -102,9 +116,6 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         mailInfo.setText(Html.fromHtml("<b>E-mail: </b>" + mailDB));
         lastNoti.setText(Html.fromHtml("<b>Last noti: </b>" + notiDB));
         infoExtra.setText("Active | User number: " + numDB);
-
-
-        fotoPerfil = (ImageView) findViewById(R.id.imageView_usuari);
 
         localitzacio = (Button) findViewById(R.id.boto_localitzacio);
         editPhone = (Button) findViewById(R.id.boto_editar_phone);
@@ -123,13 +134,15 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         roundedDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
         roundedDrawable.setCornerRadius(originalBitmap.getHeight());
 
-        fotoPerfil.setImageDrawable(getDrawable(Integer.parseInt(imageDB)));
-
         View navHeaderView = navigationView.getHeaderView(0);
         navBarMiniText = (TextView) navHeaderView.findViewById(R.id.miniTextNavBar);
         navBarUser = (TextView) navHeaderView.findViewById(R.id.nomUsuariHeaderBar);
 
         navBarUser.setText(" > " + username);
+
+        canWeRead = canWeRead();
+
+        if (canWeRead) loadImageFromString(sp.getString("imagePath", null));
 
     }
 
@@ -138,6 +151,7 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
     }
 
     private void loadImageFromString (String imagePath){
+
         if(imagePath != null){
             Uri imageUri = Uri.parse(imagePath);
             loadImageFromUri(imageUri);
@@ -146,10 +160,41 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
 
     private void loadImageFromUri(Uri imageUri) {
         try {
-            image.setImageBitmap(MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri));
+
+            bitMapImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            fotoPerfil.setImageBitmap(bitMapImage);
+
+            imagePathLink = BitMapToString(bitMapImage);
+            myDatabaseHelper.addNewPhoto(username, imagePathLink);
+            //guardar el bitMap
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setImageFromDB(Bitmap bm){
+        fotoPerfil.setImageBitmap(bm);
+    }
+
+    public Bitmap StringToBitMap(String encodedString) {
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0,
+                    encodeByte.length);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
+    }
+
+    public String BitMapToString(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String temp = Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
     }
 
     private Intent getContentIntent() {
@@ -162,6 +207,8 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         }
         return intent;
     }
+
+    //funcions botons
 
     public void funcioMail(){
 
@@ -224,6 +271,13 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         startActivity(i);
     }
 
+    public void funcioGaleria(){
+
+        Intent getImageAsContent = getContentIntent();
+        getImageAsContent.setType("image/*");
+        startActivityForResult(getImageAsContent, 1);
+    }
+
     public void funcioCamera(){
 
         PermissionUtils.checkReadExternalStoragePermissions(activity,MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
@@ -237,83 +291,52 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         //TODO: el mateix, s'haura d'afegir al database l'id del drawable perquè pugui sortir al ranking i fer servir el setIcon..
     }
 
-    public void funcioGaleria(){
-
-        Intent getIntent = getContentIntent();
-        getIntent.setType("image/*");
-
-        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        pickIntent.setType("image/*");
-
-        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
-
-        startActivityForResult(chooserIntent, 3);
-
-        //TODO: s'haura d'afegir al database l'id del drawable perquè pugui sortir al ranking
-    }
-
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //Como en este caso los 3 intents hacen lo mismo, si el estado es correcto recogemos el resultado
-        //Aún así comprobamos los request code. Hay que tener total control de lo que hace nuestra app.
+
         if(resultCode == RESULT_OK){
+
             if(requestCode >= 1 && requestCode <= 3){
-                //Líneas extras debido al usar action get content:
+
                 data.getData();
                 Uri selectedImage = data.getData();
                 String selectedImagePath = selectedImage.toString();
 
                 if(canWeRead && requestCode == 2){
-                    Log.v("PICK","Selected image uri" + selectedImage);
+
                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("imagePath",selectedImagePath );
+                    editor.putString("imagePath", selectedImagePath);
                     editor.apply();
                 }
+
                 loadImageFromUri(selectedImage);
             }
-        }else{
-            Log.v("Result","Something happened");
-        }
+
+        }else Log.v("TAG","Something happened");
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+
         switch (requestCode) {
+
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    canWeRead = true;
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    canWeRead = false;
-                }
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) canWeRead = true;
+                else canWeRead = false;
+
                 return;
             }
+
             case  MY_PERMISSIONS_REQUEST_MANAGE_DOCUMENTS: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    canWeRead = true;
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    canWeRead = false;
-                }
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) canWeRead = true;
+                else canWeRead = false;
+
                 return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 

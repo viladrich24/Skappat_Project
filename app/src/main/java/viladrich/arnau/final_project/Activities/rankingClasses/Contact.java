@@ -2,12 +2,12 @@ package viladrich.arnau.final_project.Activities.rankingClasses;
 
 public class Contact {
 
-    private int icon;
+    private String icon;
     private String name;
     private String phone;
     private String record;
 
-    Contact(int icon, String name, String phone, String record){
+    Contact(String icon, String name, String phone, String record){
 
         this.icon = icon;
         this.name = name;
@@ -18,9 +18,9 @@ public class Contact {
     Contact(){
     }
 
-    public int getIcon() { return icon; }
+    public String getIcon() { return icon; }
 
-    public void setIcon(int icon) {
+    public void setIcon(String icon) {
         this.icon = icon;
     }
 
