@@ -95,7 +95,6 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         String imageDB = myDatabaseHelper.queryImage(username);
         String numDB = myDatabaseHelper.queryRegistrationNumber(username);
 
-
         tvUser.setText(username);
         rankPos.setText(Html.fromHtml("<b>Best score: </b>" + record));
         timePos.setText(Html.fromHtml("<b>Time: </b>" + recordTime));

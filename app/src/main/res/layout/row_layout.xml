@@ -10,27 +10,6 @@
         android:layout_height="63dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_weight="1.06"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/pos"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:layout_height="match_parent"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.225"
-            android:background="@color/colorfosc">
-
-        </LinearLayout>
-
-        <LinearLayout
         android:layout_width="match_parent"
         android:layout_weight="1"
         android:layout_height="match_parent">
@@ -76,7 +55,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.225"
+            android:layout_weight="1.28"
             android:background="@color/colorfosc">
 
         </LinearLayout>
@@ -98,7 +77,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.225"
+            android:layout_weight="1.28"
             android:background="@color/colorfosc">
 
         </LinearLayout>
@@ -120,7 +99,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.225"
+            android:layout_weight="1.28"
             android:background="@color/colorfosc">
 
         </LinearLayout>

@@ -16,21 +16,6 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:text="N."
-                    android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:layout_height="match_parent" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
                 android:layout_weight="0.95"
                 android:layout_height="match_parent">
 

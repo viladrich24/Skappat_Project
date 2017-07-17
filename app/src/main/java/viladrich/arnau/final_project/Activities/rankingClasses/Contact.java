@@ -2,15 +2,13 @@ package viladrich.arnau.final_project.Activities.rankingClasses;
 
 public class Contact {
 
-    private int pos;
     private int icon;
     private String name;
     private String phone;
     private String record;
 
-    Contact(int pos, int icon, String name, String phone, String record){
+    Contact(int icon, String name, String phone, String record){
 
-        this.pos = pos;
         this.icon = icon;
         this.name = name;
         this.phone = phone;
@@ -20,17 +18,7 @@ public class Contact {
     Contact(){
     }
 
-    public int getPos() {
-        return pos;
-    }
-
-    public void setPos(int pos) {
-        this.pos = pos;
-    }
-
-    public int getIcon() {
-        return icon;
-    }
+    public int getIcon() { return icon; }
 
     public void setIcon(int icon) {
         this.icon = icon;
@@ -59,5 +47,4 @@ public class Contact {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
 }

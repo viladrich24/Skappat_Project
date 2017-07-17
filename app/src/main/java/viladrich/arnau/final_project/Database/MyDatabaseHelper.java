@@ -16,7 +16,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     private final String TAG = "MyDataBaseHelper";
 
-    public static final int DATABASE_VERSION = 25;
+    public static final int DATABASE_VERSION = 27;
     public static final String DATABASE_NAME = "MyDataBase.db";
 
 
@@ -162,14 +162,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int queryRowMatch(String s1, String s2) { //troba si coincideix pas i user
+
         Cursor c;
-        Log.v("TAG2",s1+" "+s2);
 
         c = readable.query(MyDatabaseContract.Table1.TABLE_NAME,
                 new String[] {MyDatabaseContract.Table1.COLUMN_USER, MyDatabaseContract.Table1.COLUMN_PASSWORD},
                 MyDatabaseContract.Table1.COLUMN_USER + " LIKE ? AND " + MyDatabaseContract.Table1.COLUMN_PASSWORD + " LIKE ? ",
                 new String[] {s1, s2}, null, null, null);
-
 
         int returnValue = -2;
 
@@ -190,13 +189,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int queryPasswordPhone(String s1, String s2) { //troba si coincideix pas i user
+
         Cursor c;
 
         c = readable.query(MyDatabaseContract.Table1.TABLE_NAME,
                 new String[] {MyDatabaseContract.Table1.COLUMN_USER, MyDatabaseContract.Table1.COLUMN_PHONE},
                 MyDatabaseContract.Table1.COLUMN_USER + " LIKE ? AND " + MyDatabaseContract.Table1.COLUMN_PHONE + " LIKE ? ",
                 new String[] {s1, s2}, null, null, null);
-
 
         int returnValue = -2;
 
@@ -217,13 +216,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int queryPasswordMail(String s1, String s2) { //troba si coincideix pas i user
+
         Cursor c;
 
         c = readable.query(MyDatabaseContract.Table1.TABLE_NAME,
                 new String[] {MyDatabaseContract.Table1.COLUMN_USER, MyDatabaseContract.Table1.COLUMN_MAIL},
                 MyDatabaseContract.Table1.COLUMN_USER + " LIKE ? AND " + MyDatabaseContract.Table1.COLUMN_MAIL + " LIKE ? ",
                 new String[] {s1, s2}, null, null, null);
-
 
         int returnValue = -2;
 
@@ -244,7 +243,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int queryRowExist(String s) { //troba si existeix user
+
         Cursor c;
+
         c = readable.query(MyDatabaseContract.Table1.TABLE_NAME,
                 new String[] {MyDatabaseContract.Table1.COLUMN_USER},
                 MyDatabaseContract.Table1.COLUMN_USER + " = ? ",
@@ -445,6 +446,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public HashMap <String, String> agafarPhone(){
+
         Cursor c;
 
         HashMap < String, String> usuarisRecords = new HashMap<>();
@@ -475,6 +477,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public HashMap <String, String> agafarRecord(){
+
         Cursor c;
 
         HashMap < String, String> usuarisRecords = new HashMap<>();
@@ -505,6 +508,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public HashMap <String, String> agafarIcon(){
+
         Cursor c;
 
         HashMap < String, String> usuarisRecords = new HashMap<>();

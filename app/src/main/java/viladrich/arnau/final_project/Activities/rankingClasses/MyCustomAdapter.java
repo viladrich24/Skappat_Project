@@ -28,15 +28,13 @@ public class MyCustomAdapter extends RecyclerView.Adapter<MyCustomAdapter.Adapte
         Iterator it2 = map2.entrySet().iterator();
         Iterator it3 = map3.entrySet().iterator();
 
-        int i = 1;
-
         while (it.hasNext() && it2.hasNext() && it3.hasNext()) {
             Map.Entry e = (Map.Entry)it.next();
             Map.Entry e2 = (Map.Entry)it2.next();
             Map.Entry e3 = (Map.Entry)it3.next();
 
-            addNewContact(i, (String) e3.getValue(), (String) e.getKey(), (String) e2.getValue(), (String) e.getValue());
-            i++;
+            addNewContact((String) e3.getValue(), (String) e.getKey(), (String) e2.getValue(), (String) e.getValue());
+
         }
 
         Collections.sort(contactos, new Comparator<Contact>() {
@@ -47,9 +45,9 @@ public class MyCustomAdapter extends RecyclerView.Adapter<MyCustomAdapter.Adapte
         });
     }
 
-    public ArrayList<Contact> addNewContact(int pos, String icon, String user, String phone, String record){
+    public ArrayList<Contact> addNewContact(String icon, String user, String phone, String record){
 
-        contactos.add(new Contact(pos, Integer.parseInt(icon), user, phone, record));
+        contactos.add(new Contact(Integer.parseInt(icon), user, phone, record));
         return contactos;
     }
 
@@ -66,7 +64,7 @@ public class MyCustomAdapter extends RecyclerView.Adapter<MyCustomAdapter.Adapte
         switch (iconLayout){
             default: adapterViewholder.icon.setImageDrawable(adapterViewholder.v.getResources().getDrawable(contactos.get(position).getIcon()));
         }
-        adapterViewholder.pos.setText(Integer.toString(contactos.get(position).getPos()));
+
         adapterViewholder.name.setText(contactos.get(position).getName());
         adapterViewholder.phone.setText(contactos.get(position).getPhone());
         adapterViewholder.record.setText(contactos.get(position).getRecord());
@@ -81,7 +79,6 @@ public class MyCustomAdapter extends RecyclerView.Adapter<MyCustomAdapter.Adapte
 
     public class AdapterViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView pos;
         public ImageView icon;
         public TextView name;
         public TextView phone;
@@ -92,7 +89,6 @@ public class MyCustomAdapter extends RecyclerView.Adapter<MyCustomAdapter.Adapte
             super(itemView);
 
             this.v = itemView;
-            this.pos = (TextView) itemView.findViewById(R.id.pos);
             this.icon = (ImageView) itemView.findViewById(R.id.icon);
             this.name = (TextView) itemView.findViewById(R.id.name);
             this.phone = (TextView) itemView.findViewById(R.id.phone);
