@@ -28,14 +28,8 @@
                     android:checkable="true" />
 
                 <item
-                    android:id="@+id/reproductor_musica"
-                    android:title="MusicPlayer"
-                    android:icon="@drawable/music"
-                    android:checkable="true" />
-
-                <item
                     android:id="@+id/musicPlayer2"
-                    android:title="MusicPlayer2"
+                    android:title="MusicPlayer"
                     android:icon="@drawable/music"
                     android:checkable="true" />
 

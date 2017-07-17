@@ -17,9 +17,6 @@
             android:name=".Activities.UserProfile"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Activities.ReproductorMusica"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".Activities.ActivityDePas"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

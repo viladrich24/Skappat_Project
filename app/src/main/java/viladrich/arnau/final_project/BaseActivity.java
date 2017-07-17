@@ -18,7 +18,6 @@ import viladrich.arnau.final_project.Activities.Calculadora;
 import viladrich.arnau.final_project.Activities.Memory;
 import viladrich.arnau.final_project.Activities.MusicPlayer;
 import viladrich.arnau.final_project.Activities.Ranking;
-import viladrich.arnau.final_project.Activities.ReproductorMusica;
 import viladrich.arnau.final_project.Activities.UserProfile;
 
 import static utils.Constants.PREFS_NAME;
@@ -36,7 +35,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
         m.put(R.id.perfil, UserProfile.class);
         m.put(R.id.calculadora, Calculadora.class);
-        m.put(R.id.reproductor_musica, ReproductorMusica.class);
         m.put(R.id.musicPlayer2, MusicPlayer.class);
         m.put(R.id.memory, Memory.class);
         m.put(R.id.ranking, Ranking.class);
